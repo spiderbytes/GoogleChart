@@ -1,241 +1,252 @@
 ﻿DeclareModule GoogleChart
-  
-  EnableExplicit
-  
-  ; ChartTypes:
-  
-  #ChartTypeAnnotation  = "AnnotationChart"
-  #ChartTypeArea        = "AreaChart"
-  #ChartTypeBar         = "BarChart"
-  #ChartTypeBubble      = "BubbleChart"
-  #ChartTypeCandleStick = "CandlestickChart"
-  #ChartTypeCalendar    = "Calendar"
-  #ChartTypeColumn      = "ColumnChart"
-  #ChartTypeCombo       = "ComboChart"
-  #ChartTypeGantt       = "Gantt"
-  #ChartTypeGauge       = "Gauge"
-  #ChartTypeGeo         = "GeoChart"
-  #ChartTypeHistogram   = "Histogram"
-  #ChartTypeLine        = "LineChart"
-  #ChartTypeMap         = "Map"
-  #ChartTypeOrg         = "OrgChart"
-  #ChartTypePie         = "PieChart"
-  #ChartTypeSankey      = "Sankey"
-  #ChartTypeScatter     = "ScatterChart"
-  #ChartTypeSteppedArea = "SteppedAreaChart"
-  #ChartTypeTable       = "Table"
-  #ChartTypeTimeline    = "Timeline"
-  #ChartTypeTreeMap     = "TreeMap"
-  #ChartTypeWordTree    = "WordTree"
-  
-  EnumerationBinary ; EventTypes
-    ; Table
-    #EventType_Select = 1
-    #EventType_Page
-    #EventType_Sort
-    #EventType_Ready
-    #EventType_Error
-  EndEnumeration    
-  
-  Enumeration
-    #ChartGadgetOptions
-    #ChartGadgetDataTable
-    #ChartGadgetQuery
-  EndEnumeration
-  
-  Global IsInitialized
-  
-  Declare Init(Callback, Packages = 0)
-  
-  Declare BindGadget(Gadget, ChartType.s = #ChartTypeLine)
-  
-  Declare GetChartGadgetAttribute(Gadget, Attribute)
-  Declare SetChartGadgetAttribute(Gadget, Attribute, Value)
-  
-  Declare BindChartGadgetEvent(Gadget, Callback, EventType = #PB_All)
-  
-  Declare GetChartGadgetState(Gadget)
-  
-  Declare NewDataTable()
-  
-  Declare.s GetChartGadgetItemText(Gadget, Position, Column = 0)
-  
-  Declare DataTableAddColumn(DataTable, Text.s, Type.s="string")
-  
-  Declare DataTableAddRow(DataTable, JsArray)
-  
-  Declare ClearDataTable(Gadget)
-  
-  Declare Refresh(Gadget)
-  
+	
+	EnableExplicit
+	
+	; ChartTypes:
+	
+	#ChartTypeAnnotation  = "AnnotationChart"
+	#ChartTypeArea        = "AreaChart"
+	#ChartTypeBar         = "BarChart"
+	#ChartTypeBubble      = "BubbleChart"
+	#ChartTypeCandleStick = "CandlestickChart"
+	#ChartTypeCalendar    = "Calendar"
+	#ChartTypeColumn      = "ColumnChart"
+	#ChartTypeCombo       = "ComboChart"
+	#ChartTypeGantt       = "Gantt"
+	#ChartTypeGauge       = "Gauge"
+	#ChartTypeGeo         = "GeoChart"
+	#ChartTypeHistogram   = "Histogram"
+	#ChartTypeLine        = "LineChart"
+	#ChartTypeMap         = "Map"
+	#ChartTypeOrg         = "OrgChart"
+	#ChartTypePie         = "PieChart"
+	#ChartTypeSankey      = "Sankey"
+	#ChartTypeScatter     = "ScatterChart"
+	#ChartTypeSteppedArea = "SteppedAreaChart"
+	#ChartTypeTable       = "Table"
+	#ChartTypeTimeline    = "Timeline"
+	#ChartTypeTreeMap     = "TreeMap"
+	#ChartTypeWordTree    = "WordTree"
+	
+	EnumerationBinary ; EventTypes
+										; Table
+		#EventType_Select = 1
+		#EventType_Page
+		#EventType_Sort
+		#EventType_Ready
+		#EventType_Error
+	EndEnumeration    
+	
+	Enumeration
+		#ChartOptions
+		#ChartData
+		#ChartDataTable
+		#ChartQuery
+	EndEnumeration
+	
+	Global IsInitialized
+	
+	Declare Init(Callback, Packages = 0)
+	
+	Declare BindGadget(Gadget, ChartType.s = #ChartTypeLine)
+	
+	Declare GetChartGadgetAttribute(Gadget, Attribute)
+	Declare SetChartGadgetAttribute(Gadget, Attribute, Value)
+	
+	Declare BindChartGadgetEvent(Gadget, Callback, EventType = #PB_All)
+	
+	Declare GetChartGadgetState(Gadget)
+	
+	Declare NewDataTable()
+	
+	Declare.s GetChartGadgetItemText(Gadget, Position, Column = 0)
+	
+	Declare DataTableAddColumn(DataTable, Text.s, Type.s="string")
+	
+	Declare DataTableAddRow(DataTable, JsArray)
+	
+	Declare ClearDataTable(Gadget)
+	
+	Declare Refresh(Gadget)
+	
 EndDeclareModule
 
 Module GoogleChart
-  
-  EnableExplicit
-  
-  Macro GetSelector
-    !	var selector = $(spider_GadgetID(v_gadget).div).find('.dijitContentPane');
-  EndMacro
-  Macro GetChart
-    GetSelector
-    ! var chart = selector.data("GoogleChart");
-  EndMacro
-  
-  Procedure Init(Callback, Packages = 0)
-    
-    ! require(["https://www.gstatic.com/charts/loader.js"],
-    !   function() {
-    IsInitialized = #True
-    !   google.charts.load('current', { packages : v_packages } );
-    !   google.charts.setOnLoadCallback(v_callback);
-    ! });    
-   
-  EndProcedure
-    
-  Procedure BindGadget(Gadget, ChartType.s = #ChartTypeLine)
-  	
-  	GetSelector
-  	
-    ! var chart = new google.visualization.ChartWrapper ({ 
-    !   chartType: v_charttype,
-    !   containerId: selector[0].id 
-    ! });
-    
-    ! chart.setOptions( {} );
-    ! chart.setDataTable( [] );
-    
-    ! spider.DojoAspect.after(dijit.byId(spider_GadgetID(v_gadget).gadget.id), "resize", function() {
-    ! 	chart.draw();
-    ! });      
-    
-    ! selector.data("GoogleChart", chart);
-    
-    ! chart.draw();
-    
-  EndProcedure
-  
-  Procedure SetChartGadgetAttribute(Gadget, Attribute, Value)
-    
-    GetChart
-    
-    Select Attribute
-      Case #ChartGadgetDataTable
-        ! chart.setDataTable(v_value);
-      Case #ChartGadgetOptions
-        ! chart.setOptions($.extend(v_value, chart.getOptions()));
-      Case #ChartGadgetQuery
-        ! chart.setQuery(v_value);
-    EndSelect
-    
-    ! chart.draw();
-    
-  EndProcedure
-  
-  Procedure GetChartGadgetAttribute(Gadget, Attribute)
-    
-    GetChart
-    
-    Select Attribute
-      Case #ChartGadgetDataTable
-        ! return chart.getDataTable();
-      Case #ChartGadgetOptions
-        ! return chart.getOptions();
-      Case #ChartGadgetQuery
-        ! return chart.getQuery();
-    EndSelect
-    
-    ! chart.draw();
-    
-  EndProcedure
-  
-  Procedure bnge(chart, event.s, etype, etypes, gadget, callback)
+	
+	EnableExplicit
+	
+	Macro GetSelector
+		!	var selector = $(spider_GadgetID(v_gadget).div).find('.dijitContentPane');
+	EndMacro
+	Macro GetChart
+		GetSelector
+		! var chart = selector.data("GoogleChart");
+	EndMacro
+	
+	Procedure Init(Callback, Packages = 0)
+		
+		! require(["https://www.gstatic.com/charts/loader.js"],
+		!   function() {
+		IsInitialized = #True
+		!   google.charts.load('current', { packages : v_packages } );
+		!   google.charts.setOnLoadCallback(v_callback);
+		! });    
+		
+	EndProcedure
+	
+	Procedure BindGadget(Gadget, ChartType.s = #ChartTypeLine)
+		
+		GetSelector
+		
+		! var chart = new google.visualization.ChartWrapper ({ 
+		!   chartType: v_charttype,
+		!   containerId: selector[0].id 
+		! });
+		
+		! chart.setOptions( {} );
+		! chart.setDataTable( [] );
+		
+		! spider.DojoAspect.after(dijit.byId(spider_GadgetID(v_gadget).gadget.id), "resize", function() {
+		! 	chart.draw();
+		! });      
+		
+		! selector.data("GoogleChart", chart);
+		
+		! chart.draw();
+		
+	EndProcedure
+	
+	Procedure SetChartGadgetAttribute(Gadget, Attribute, Value)
+		
+		GetChart
+		
+		Select Attribute
+			Case #ChartData
+				! chart.setDataTable(google.visualization.arrayToDataTable(v_value));
+			Case #ChartDataTable
+				! chart.setDataTable(v_value);
+			Case #ChartOptions
+				! chart.setOptions($.extend(v_value, chart.getOptions()));
+			Case #ChartQuery
+				! chart.setQuery(v_value);
+		EndSelect
+		
+		! chart.draw();
+		
+	EndProcedure
+	
+	Procedure GetChartGadgetAttribute(Gadget, Attribute)
+		
+		GetChart
+		
+		Select Attribute
+			Case #ChartDataTable
+				! return chart.getDataTable();
+			Case #ChartOptions
+				! return chart.getOptions();
+			Case #ChartQuery
+				! return chart.getQuery();
+		EndSelect
+		
+		! chart.draw();
+		
+	EndProcedure
+	
+	Procedure _BindChartGadgetEvent(chart, event.s, etype, etypes, gadget, callback)
 		If etypes & etype = etype
-      ! google.visualization.events.addListener(v_chart, v_event, function(e) {
+			! google.visualization.events.addListener(v_chart, v_event, function(e) {
 			!   spider.event.eventObject = v_gadget;
 			!		spider.event.eventType = v_etype;
-      !   v_callback(e);
-      ! });      
-    EndIf
+			!   v_callback(e);
+			! });      
+		EndIf
 	EndProcedure
-  
-  Procedure BindChartGadgetEvent(Gadget, Callback, EventType = #PB_All)
-    
-    ; Table-Events: 
-    ; 
-    ; select	// Standard select event, but only entire rows can be selected.
-    ; 				// Properties: None
-    ; 
-    ; page	 	// Triggered when users click on a page navigation button.
-    ; 				// Properties: page: Number. The index of page to navigate to.
-    ; 
-    ; sort		// Triggered when users click on a column header, and the sort option is not 'disable'.
-    ; 				// Properties: An object with the following properties:
-    ; 				// column - (number) Index of the column by which the table is sorted.
-    ; 				// ascending - (boolean) true if the sort is ascending, false if descending.
-    ; 				// sortedIndexes - (numeric array) Array of numbers, wherethe index in the array is the row number as sorted (in the visible table), and the value is the index of that row in the underlying (unsorted) data table.
-    ; 
-    ; ready		// The chart is ready for external method calls. If you want to interact with the chart, and call methods after you draw it, you should set up a listener for this event before you call the draw method, and call them only after the event was fired.
-    ; 				// Properties: None    
-    
-    If EventType = #PB_All
-      
-      EventType = #EventType_Select |
-                  #EventType_Page |
-                  #EventType_Sort |
-                  #EventType_Ready |
-                  #EventType_Error
-      
-    EndIf
-    
-    Protected chart
-    
-    GetSelector
-    
-    ! v_chart = selector.data("GoogleChart");
-    
-    bnge(chart, "select", #EventType_Select, EventType, Gadget, Callback)    
-    bnge(chart, "page",   #EventType_Page,   EventType, Gadget, Callback)    
-    bnge(chart, "sort",   #EventType_Sort,   EventType, Gadget, Callback)    
-    bnge(chart, "ready",  #EventType_Ready,  EventType, Gadget, Callback)    
-    bnge(chart, "error",  #EventType_Error,  EventType, Gadget, Callback)    
-    
-  EndProcedure
-  
-  Procedure GetChartGadgetState(Gadget)
-    GetChart
-    ! if (chart.getChart().getSelection()[0]) return chart.getChart().getSelection()[0].row;
-    ! return -1;
-  EndProcedure
-  
-  Procedure.s GetChartGadgetItemText(Gadget, Position, Column = 0)
-    GetChart
-    ! var dt = chart.getDataTable();
-    ! return dt.getValue(v_position, v_column);
-  EndProcedure
-  
-  Procedure NewDataTable()
-    ! return new google.visualization.DataTable();
-  EndProcedure
-    
-  Procedure DataTableAddColumn(DataTable, Text.s, Type.s="string")
-    ! v_datatable.addColumn(v_type, v_text);
-  EndProcedure
-  
-  Procedure DataTableAddRow(DataTable, JsArray)
-    ! v_datatable.addRow(v_jsarray);
-  EndProcedure
-  
-  Procedure ClearDataTable(Gadget)
-    GetChart
-    ! var dt = chart.getDataTable();
-    ! dt.removeRows(0, dt.getNumberOfRows());
-    ! chart.draw();
-  EndProcedure
-  
-  Procedure Refresh(Gadget)
-    GetChart
-    ! chart.draw();
-  EndProcedure
-  
+	
+	Procedure BindChartGadgetEvent(Gadget, Callback, EventType = #PB_All)
+		
+		; Table-Events: 
+		; 
+		; select	// Standard select event, but only entire rows can be selected.
+		; 				// Properties: None
+		; 
+		; page	 	// Triggered when users click on a page navigation button.
+		; 				// Properties: page: Number. The index of page to navigate to.
+		; 
+		; sort		// Triggered when users click on a column header, and the sort option is not 'disable'.
+		; 				// Properties: An object with the following properties:
+		; 				// column - (number) Index of the column by which the table is sorted.
+		; 				// ascending - (boolean) true if the sort is ascending, false if descending.
+		; 				// sortedIndexes - (numeric array) Array of numbers, wherethe index in the array is the row number as sorted (in the visible table), and the value is the index of that row in the underlying (unsorted) data table.
+		; 
+		; ready		// The chart is ready for external method calls. If you want to interact with the chart, and call methods after you draw it, you should set up a listener for this event before you call the draw method, and call them only after the event was fired.
+		; 				// Properties: None    
+		
+		If EventType = #PB_All
+			
+			EventType = #EventType_Select |
+			            #EventType_Page |
+			            #EventType_Sort |
+			            #EventType_Ready |
+			            #EventType_Error
+			
+		EndIf
+		
+		Protected chart
+		
+		GetSelector
+		
+		! v_chart = selector.data("GoogleChart");
+		
+		_BindChartGadgetEvent(chart, "select", #EventType_Select, EventType, Gadget, Callback)    
+		_BindChartGadgetEvent(chart, "page",   #EventType_Page,   EventType, Gadget, Callback)    
+		_BindChartGadgetEvent(chart, "sort",   #EventType_Sort,   EventType, Gadget, Callback)    
+		_BindChartGadgetEvent(chart, "ready",  #EventType_Ready,  EventType, Gadget, Callback)    
+		_BindChartGadgetEvent(chart, "error",  #EventType_Error,  EventType, Gadget, Callback)    
+		
+	EndProcedure
+	
+	Procedure GetChartGadgetState(Gadget)
+		GetChart
+		! if (chart.getChart().getSelection()[0]) return chart.getChart().getSelection()[0].row;
+		! return -1;
+	EndProcedure
+	
+	Procedure.s GetChartGadgetItemText(Gadget, Position, Column = 0)
+		GetChart
+		! var dt = chart.getDataTable();
+		! return dt.getValue(v_position, v_column);
+	EndProcedure
+	
+	Procedure NewDataTable()
+		! return new google.visualization.DataTable();
+	EndProcedure
+	
+	Procedure DataTableAddColumn(DataTable, Text.s, Type.s="string")
+		! v_datatable.addColumn(v_type, v_text);
+	EndProcedure
+	
+	Procedure DataTableAddRow(DataTable, JsArray)
+		! v_datatable.addRow(v_jsarray);
+	EndProcedure
+	
+	Procedure ClearDataTable(Gadget)
+		GetChart
+		! var dt = chart.getDataTable();
+		! dt.removeRows(0, dt.getNumberOfRows());
+		! chart.draw();
+	EndProcedure
+	
+	Procedure Refresh(Gadget)
+		GetChart
+		! chart.draw();
+	EndProcedure
+	
 EndModule
+; IDE Options = SpiderBasic 2.10 (Windows - x86)
+; CursorPosition = 243
+; FirstLine = 187
+; Folding = ----
+; iOSAppOrientation = 0
+; AndroidAppOrientation = 0
+; EnableXP
+; CompileSourceDirectory
