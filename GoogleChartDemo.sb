@@ -1,0 +1,282 @@
+﻿
+XIncludeFile "GoogleChart.sbi"
+
+Enumeration ; Windows
+  #PieChartWindow
+  #LineChartWindow
+  #GaugeWindow
+  #GeoChartWindow
+EndEnumeration
+
+Enumeration ; Gadgets
+  #PieChart
+  #LineChart
+  #Gauge
+  #GeoChart
+EndEnumeration
+
+Enumeration ; Misc
+  #GaugeWindowTimer
+EndEnumeration
+
+Procedure WindowSizeEvent()
+  
+  Select EventWindow()
+      
+    Case #PieChartWindow
+      ResizeGadget(#PieChart, #PB_Ignore, #PB_Ignore, WindowWidth(#PieChartWindow), WindowHeight(#PieChartWindow))
+      GoogleChart::Refresh(#PieChart)
+      
+    Case #LineChartWindow
+      ResizeGadget(#LineChart, #PB_Ignore, #PB_Ignore, WindowWidth(#LineChartWindow), WindowHeight(#LineChartWindow))
+      GoogleChart::Refresh(#LineChart)
+      
+    Case #GaugeWindow
+      ResizeGadget(#Gauge, #PB_Ignore, #PB_Ignore, WindowWidth(#GaugeWindow), WindowHeight(#GaugeWindow))
+      GoogleChart::Refresh(#Gauge)
+      
+    Case #GeoChartWindow
+      ResizeGadget(#GeoChart, #PB_Ignore, #PB_Ignore, WindowWidth(#GeoChartWindow), WindowHeight(#GeoChartWindow))
+      GoogleChart::Refresh(#GeoChart)
+      
+    Default
+      
+      Debug "?"
+      
+  EndSelect
+  
+EndProcedure
+
+; PieChart-Example
+
+Procedure DrawPieChartExample()
+  
+  ; ------------------------------------
+  ; PieChart
+  ; https://google-developers.appspot.com/chart/interactive/docs/gallery/piechart
+  ; ------------------------------------
+    
+  OpenWindow(#PieChartWindow, 10, 10, 400, 300, "PieChart", #PB_Window_SizeGadget)
+  
+  BindEvent(#PB_Event_SizeWindow, @WindowSizeEvent(), #PieChartWindow)
+  
+  ContainerGadget(#PieChart, 0, 0, WindowWidth(#PieChartWindow), WindowHeight(#PieChartWindow), #PB_Container_Flat) : CloseGadgetList()
+    
+  GoogleChart::BindGadget(#PieChart, GoogleChart::#ChartTypePie)
+  
+  ; Set Options
+  
+  Protected ChartOptions
+  
+  ! v_chartoptions = { 'title' : 'How Much Pizza I Ate Last Night' };
+  
+  GoogleChart::SetChartGadgetAttribute(#PieChart, GoogleChart::#ChartGadgetOptions, ChartOptions)
+  
+  ; Set Data
+  
+  Protected ChartDataTable = GoogleChart::NewDataTable()
+  
+  GoogleChart::DataTableAddColumn(ChartDataTable, "Topping")
+  GoogleChart::DataTableAddColumn(ChartDataTable, "Slices", "number")
+  
+  ! v_chartdatatable.addRows([
+  !   ['Mushrooms', 3],
+  !   ['Onions', 1],
+  !   ['Olives', 1], 
+  !   ['Zucchini', 1],
+  !   ['Pepperoni', 2]
+  ! ]);
+  
+  GoogleChart::SetChartGadgetAttribute(#PieChart, GoogleChart::#ChartGadgetDataTable, ChartDataTable)
+  
+EndProcedure
+
+; LineChart-Example
+
+Procedure DrawLineChartExample()
+  
+  ; ------------------------------------
+  ; LineChart
+  ; https://google-developers.appspot.com/chart/interactive/docs/gallery/linechart
+  ; ------------------------------------
+  
+  OpenWindow(#LineChartWindow, 420, 320, 1000, 300, "LineChart", #PB_Window_SizeGadget)
+  
+  BindEvent(#PB_Event_SizeWindow, @WindowSizeEvent(), #LineChartWindow)
+  
+  ContainerGadget(#LineChart, 0, 0, WindowWidth(#LineChartWindow), WindowHeight(#LineChartWindow), #PB_Container_Flat) : CloseGadgetList()
+  
+  GoogleChart::BindGadget(#LineChart, GoogleChart::#ChartTypeLine)
+  
+  ; Set Options
+  
+  Protected ChartOptions
+  
+  ! v_chartoptions = {
+  !   hAxis: { title: 'Time' },
+  !   vAxis: { title: 'Popularity' }
+  ! };
+  
+  GoogleChart::SetChartGadgetAttribute(#LineChart, GoogleChart::#ChartGadgetOptions, ChartOptions)
+  
+  ; Set Data
+  
+  Protected ChartDataTable = GoogleChart::NewDataTable()
+  
+  GoogleChart::DataTableAddColumn(ChartDataTable, "X", "number")
+  GoogleChart::DataTableAddColumn(ChartDataTable, "Dogs", "number")
+  
+  ! v_chartdatatable.addRows([
+  !   [ 0,  0], [ 1, 10], [ 2, 23], [ 3, 17], [ 4, 18], [ 5,  9],
+  !   [ 6, 11], [ 7, 27], [ 8, 33], [ 9, 40], [10, 32], [11, 35],
+  !   [12, 30], [13, 40], [14, 42], [15, 47], [16, 44], [17, 48],
+  !   [18, 52], [19, 54], [20, 42], [21, 55], [22, 56], [23, 57],
+  !   [24, 60], [25, 50], [26, 52], [27, 51], [28, 49], [29, 53],
+  !   [30, 55], [31, 60], [32, 61], [33, 59], [34, 62], [35, 65],
+  !   [36, 62], [37, 58], [38, 55], [39, 61], [40, 64], [41, 65],
+  !   [42, 63], [43, 66], [44, 67], [45, 69], [46, 69], [47, 70],
+  !   [48, 72], [49, 68], [50, 66], [51, 65], [52, 67], [53, 70],
+  !   [54, 71], [55, 72], [56, 73], [57, 75], [58, 70], [59, 68],
+  !   [60, 64], [61, 60], [62, 65], [63, 67], [64, 68], [65, 69],
+  !   [66, 70], [67, 72], [68, 75], [69, 80]
+  ! ]);
+  
+  GoogleChart::SetChartGadgetAttribute(#LineChart, GoogleChart::#ChartGadgetDataTable, ChartDataTable)
+ 
+EndProcedure
+
+; Gauge-Example
+
+Procedure GaugeWindowTimerEvent()
+  
+  Protected RandomMemoryValue  = Random(100, 0)
+  Protected RandomCpuValue     = Random(100, 0)
+  Protected RandomNetworkValue = Random(100, 0)
+  
+  Protected ChartDataTable = GoogleChart::NewDataTable()
+  
+  GoogleChart::DataTableAddColumn(ChartDataTable, "Label")
+  GoogleChart::DataTableAddColumn(ChartDataTable, "Value", "number")
+  
+  ! v_chartdatatable.addRows([
+  !   ['Memory',  v_randommemoryvalue], 
+  !   ['CPU',     v_randomcpuvalue],
+  !   ['Network', v_randomnetworkvalue]
+  ! ]);
+  
+  GoogleChart::SetChartGadgetAttribute(#Gauge, GoogleChart::#ChartGadgetDataTable, ChartDataTable)  
+  
+EndProcedure
+
+Procedure DrawGaugeExample()
+  
+  ; ------------------------------------
+  ; Gauge
+  ; https://google-developers.appspot.com/chart/interactive/docs/gallery/gauge
+  ; ------------------------------------
+  
+  OpenWindow(#GaugeWindow, 520, 40, 590, 230, "Gauge", #PB_Window_SizeGadget)
+  
+  BindEvent(#PB_Event_SizeWindow, @WindowSizeEvent(), #GaugeWindow)
+  
+  ContainerGadget(#Gauge, 0, 0, WindowWidth(#GaugeWindow), WindowHeight(#GaugeWindow), #PB_Container_Flat) : CloseGadgetList()
+    
+  GoogleChart::BindGadget(#Gauge, GoogleChart::#ChartTypeGauge)
+  
+  ; Set Options
+   
+  Protected ChartOptions
+  
+  ! v_chartoptions = {
+  !    redFrom: 90,
+  !    redTo: 100,
+  !    yellowFrom: 75,
+  !    yellowTo: 90,
+  !    minorTicks: 10
+  !   };
+  
+  GoogleChart::SetChartGadgetAttribute(#Gauge, GoogleChart::#ChartGadgetOptions, ChartOptions)
+   
+  ; Set Data
+  
+  Protected ChartDataTable = GoogleChart::NewDataTable()
+  
+  GoogleChart::DataTableAddColumn(ChartDataTable, "Label")
+  GoogleChart::DataTableAddColumn(ChartDataTable, "Value", "number")
+  
+  ! v_chartdatatable.addRows([
+  !   ['Memory', 80],
+  !   ['CPU', 55],
+  !   ['Network', 68]
+  ! ]);
+  
+  GoogleChart::SetChartGadgetAttribute(#Gauge, GoogleChart::#ChartGadgetDataTable, ChartDataTable)
+  
+  ; Set a timer for updating Gauge-Values
+  
+  AddWindowTimer(#GaugeWindow, #GaugeWindowTimer, 500)
+  BindEvent(#PB_Event_Timer, @GaugeWindowTimerEvent(), #GaugeWindow, #GaugeWindowTimer)
+   
+EndProcedure
+
+; GeoChart-Example
+
+Procedure DrawGeoChartExample()
+  
+  ; ------------------------------------
+  ; GeoChart
+  ; https://google-developers.appspot.com/chart/interactive/docs/gallery/geochart
+  ; ------------------------------------
+  
+  OpenWindow(#GeoChartWindow, 50, 400, 650, 450, "GeoChart", #PB_Window_SizeGadget)
+  
+  BindEvent(#PB_Event_SizeWindow, @WindowSizeEvent(), #GeoChartWindow)
+  
+  ContainerGadget(#GeoChart, 0, 0, WindowWidth(#GeoChartWindow), WindowHeight(#GeoChartWindow), #PB_Container_Flat) : CloseGadgetList()
+  
+  GoogleChart::BindGadget(#GeoChart, GoogleChart::#ChartTypeGeo)
+  
+  ; Set Options
+  
+  Protected ChartOptions
+  
+  ! v_chartoptions = {};
+  
+  GoogleChart::SetChartGadgetAttribute(#GeoChart, GoogleChart::#ChartGadgetOptions, ChartOptions)
+  
+  ; Set Data
+  
+  Protected ChartDataTable = GoogleChart::NewDataTable()
+  
+  GoogleChart::DataTableAddColumn(ChartDataTable, "Country")
+  GoogleChart::DataTableAddColumn(ChartDataTable, "Popularity", "number")
+  
+  ! v_chartdatatable.addRows([
+  !   ['Germany', 200],
+  !   ['United States', 300],
+  !   ['Brazil', 400],
+  !   ['Canada', 500],
+  !   ['France', 600],
+  !   ['RU', 700]
+  ! ]);
+  
+  GoogleChart::SetChartGadgetAttribute(#GeoChart, GoogleChart::#ChartGadgetDataTable, ChartDataTable)  
+  
+EndProcedure
+
+; Main
+
+Procedure Main()
+  
+  DrawPieChartExample()
+  DrawLineChartExample()
+  DrawGaugeExample()
+  DrawGeoChartExample()
+  
+EndProcedure
+
+Define Packages
+
+! v_packages = ["corechart", "geochart", "gauge"];
+
+GoogleChart::Init(@Main(), Packages)
