@@ -126,7 +126,8 @@ Module GoogleChart
 			Case #ChartDataTable
 				! chart.setDataTable(v_value);
 			Case #ChartOptions
-				! chart.setOptions($.extend(v_value, chart.getOptions()));
+				; ! chart.setOptions($.extend(v_value, chart.getOptions()));
+				! chart.setOptions($.extend({}, chart.getOptions(), v_value));				
 			Case #ChartQuery
 				! chart.setQuery(v_value);
 		EndSelect
